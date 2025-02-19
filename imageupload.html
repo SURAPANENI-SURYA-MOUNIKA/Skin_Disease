@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preview Image Before Upload</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Poppins:400,500,600,700&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        html, body {
+            background: linear-gradient(135deg, #8ec5fc 0%, #8ec5fc 100%);
+            display: grid;
+            height: 100%;
+            place-items: center;
+            text-align: center;
+        }
+
+        .container {
+            height: 450px;
+            width: 430px;
+            position: relative;
+        }
+
+        .container .wrapper {
+            position: relative;
+            height: 300px;
+            width: 100%;
+            border-radius: 10px;
+            background: #fff;
+            border: 2px dashed #c2cdda;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .wrapper.active {
+            border: none;
+        }
+
+        .wrapper .image {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .wrapper img {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+        }
+
+        .wrapper .icon {
+            font-size: 100px;
+            color: #9658fe;
+        }
+
+        .wrapper .text {
+            font-size: 20px;
+            font-weight: 500;
+            color: #5B5B7B;
+        }
+
+        .wrapper #cancel-btn i {
+            position: absolute;
+            font-size: 20px;
+            right: 15px;
+            top: 15px;
+            color: #9658fe;
+            cursor: pointer;
+            display: none;
+        }
+
+        .wrapper.active:hover #cancel-btn i {
+            display: block;
+        }
+
+        .wrapper #cancel-btn i:hover {
+            color: #e74c3c;
+        }
+
+        .wrapper .file-name {
+            position: absolute;
+            bottom: 0px;
+            width: 100%;
+            padding: 8px 0;
+            font-size: 18px;
+            color: #fff;
+            display: none;
+            background: linear-gradient(135deg, #3a8ffe 0%, #9658fe 100%);
+        }
+
+        .wrapper.active:hover .file-name {
+            display: block;
+        }
+
+        .container #custom-btn {
+            margin-top: 30px;
+            display: block;
+            width: 100%;
+            height: 50px;
+            border: none;
+            outline: none;
+            border-radius: 25px;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            background: linear-gradient(135deg, #3a8ffe 0%, #9658fe 100%);
+        }
+
+        .info {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .see-more-btn {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #9658fe;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .see-more-btn:hover {
+            background-color: #3a8ffe;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="wrapper">
+            <div class="image">
+                <img src="" alt="">
+            </div>
+            <div class="content">
+                <div class="icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <div class="text">
+                    No file chosen, yet!
+                </div>
+            </div>
+            <div id="cancel-btn">
+                <i class="fas fa-times"></i>
+            </div>
+            <div class="file-name">
+                Disease name here
+            </div>
+        </div>
+        <button onclick="defaultBtnActive()" id="custom-btn">Choose a file</button>
+        <input id="default-btn" type="file" hidden>
+        
+        <!-- Disease Information and See More Button -->
+        <div id="disease-info" class="info" style="display: none;">
+            <p id="disease-info-text">Some brief info about the disease...</p>
+            <button id="see-more-btn" class="see-more-btn" onclick="openDiseaseUrl()">See More</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+    <script>
+        const wrapper = document.querySelector(".wrapper");
+        const fileName = document.querySelector(".file-name");
+        const defaultBtn = document.querySelector("#default-btn");
+        const customBtn = document.querySelector("#custom-btn");
+        const cancelBtn = document.querySelector("#cancel-btn i");
+        const img = document.querySelector("img");
+        const diseaseInfo = document.querySelector("#disease-info");
+        const diseaseInfoText = document.querySelector("#disease-info-text");
+
+        let regExp = /[0-9a-zA-Z\^\&\'\@\{\}\[\]\\,\$\=\!\-\#\(\)\.\%\+\~\_ ]+$/;
+
+        function defaultBtnActive() {
+            defaultBtn.click();
+        }
+
+        defaultBtn.addEventListener("change", function () {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function () {
+                    const result = reader.result;
+                    img.src = result;
+                    wrapper.classList.add("active");
+
+                    // Get the disease name based on the image file name (excluding extension)
+                    const fileNameWithoutExtension = file.name.split('.')[0].replace(/_/g, ' ');
+                    fileName.textContent = capitalizeFirstLetter(fileNameWithoutExtension);
+                    showDiseaseInfo(fileNameWithoutExtension);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        cancelBtn.addEventListener("click", function () {
+            wrapper.classList.remove("active");
+            img.src = "";
+            fileName.textContent = "";
+            diseaseInfo.style.display = "none";
+        });
+
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        function showDiseaseInfo(diseaseName) {
+            // Add a brief description for each disease (Example)
+            let diseaseDescription = "";
+            let diseaseUrl = "";
+
+            switch (diseaseName.toLowerCase()) {
+                case "actinic keratosis":
+                    diseaseDescription = "Actinic keratosis is a precancerous area of thick, scaly, or crusty skin. These growths are most often caused by long-term sun exposure.";
+                    diseaseUrl = "https://www.cancer.org/cancer/skin-cancer/skin-cancer-types/actinic-keratosis.html";
+                    break;
+                case "atopic dermatitis":
+                  diseaseDescription="Atopic dermatitis, also known as eczema, is a chronic skin condition that causes inflamed, itchy, red, and cracked skin. It's the most common type of chronic inflammatory skin disease. ";
+                  diseaseUrl="https://www.mayoclinic.org/diseases-conditions/atopic-dermatitis-eczema/symptoms-causes/syc-20353273";
+                  break;
+               case "benign keratosis":
+                 diseaseDescription="Seborrheic keratosis is a benign, non-cancerous skin growth that's also known as a benign keratosis. It's the most common benign skin tumor in humans";
+                diseaseUrl="https://www.mayoclinic.org/diseases-conditions/seborrheic-keratosis/symptoms-causes/syc-20353878";
+                break;
+                case "dermatofibroma":
+                  diseaseDescription="A dermatofibroma is a benign, firm, slow-growing skin nodule that's usually harmless. They are also known as fibrous histiocytomas";
+                  diseaseUrl="https://dermnetnz.org/topics/dermatofibroma";
+                     break;
+                
+               case "melanocytic nevus":
+                  diseaseDescription="A melanocytic nevus is a mole, which is a non-cancerous growth on the skin. They are usually round or oval-shaped, and can be skin-colored to dark brown. ";
+                  diseaseUrl="https://dermnetnz.org/topics/melanocytic-naevus";
+                  break;
+
+                case "melanoma":
+                    diseaseDescription = "Melanoma is a dangerous type of skin cancer that can occur when skin cells called melanocytes develop into cancer. It can appear as a new spot or a change in an existing mole or freckle. ";
+                    diseaseUrl = "https://en.wikipedia.org/wiki/Melanoma";
+                    break;
+               
+               case "squamous cell carcinoma":
+                  diseaseDescription="Squamous cell carcinoma is a type of cancer that can affect the skin, mouth, throat, and other parts of the body. It's also known as epidermoid carcinoma. ";
+                  diseaseUrl="https://www.mayoclinic.org/diseases-conditions/squamous-cell-carcinoma/symptoms-causes/syc-20352480";
+                  break;
+
+               case  "tinea ringworm candidiasis":
+                  diseaseDescription="Tinea (ringworm), candidiasis, and athlete's foot are all skin infections caused by different types of fungi. ";
+                  diseaseUrl="https://www.webmd.com/skin-problems-and-treatments/features/ringworm-or-candida";
+                  break;
+                
+               case "vascular lesion":
+                  diseaseDescription="Vascular lesions are abnormal growths or malformations in blood vessels. They can appear as birthmarks, skin marks, tumors, sores, ulcers, or wounds. ";
+                  diseaseUrl="https://www.ssmhealth.com/cardinal-glennon/services/pediatric-plastic-reconstructive-surgery/hemangiomas";
+               break;
+                  // Add more diseases and their descriptions as needed
+                default:
+                    diseaseDescription = "No description available for this disease.";
+                    diseaseUrl = "#";  // Default URL or a placeholder
+            }
+
+            // Display the disease description and "See More" button
+            diseaseInfoText.textContent = diseaseDescription;
+            diseaseInfo.style.display = "block";
+
+            // Store the disease URL for the "See More" button
+            window.diseaseUrl = diseaseUrl;
+        }
+
+        function openDiseaseUrl() {
+            // Open the URL of the selected disease in a new tab
+            window.open(window.diseaseUrl, '_blank');
+        }
+    </script>
+</body>
+</html>

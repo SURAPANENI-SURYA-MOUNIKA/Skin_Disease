@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login & Register Form</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap");
+    :root {
+      --white-color: hsl(0, 0%, 100%);
+      --black-color: hsl(0, 0%, 0%);
+      --body-font: "Poppins", sans-serif;
+      --h1-font-size: 1.75rem;
+      --normal-font-size: 1rem;
+      --small-font-size: 0.813rem;
+      --font-medium: 500;
+    }
+
+    * {
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+    }
+
+    body,
+    input,
+    button {
+      font-size: var(--normal-font-size);
+      font-family: var(--body-font);
+    }
+
+    body {
+      color: var(--white-color);
+      background: #282c34;
+      margin: 0;
+    }
+
+    .container {
+      position: relative;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .background-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1;
+    }
+
+    .navigation {
+      position: absolute;
+      top: 0;
+      right: 0;
+      padding: 1rem;
+      display: flex;
+      gap: 1rem;
+    }
+
+    .navigation a {
+      color: rgb(200, 0, 255);
+      font-size: 1.2rem;
+      text-decoration: none;
+    }
+
+    .login {
+      background-color: hsla(0, 0%, 10%, 0.8);
+      border: 2px solid var(--white-color);
+      padding: 2rem;
+      border-radius: 1rem;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .login__title {
+      text-align: center;
+      font-size: var(--h1-font-size);
+      font-weight: var(--font-medium);
+      margin-bottom: 1.5rem;
+    }
+
+    .login__box {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 1.5rem;
+    }
+
+    .login__label {
+      margin-bottom: 0.5rem;
+    }
+
+    .login__input {
+      width: 100%;
+      padding: 0.8rem;
+      border-radius: 0.5rem;
+      background: none;
+      border: 1px solid var(--white-color);
+      color: var(--white-color);
+    }
+
+    .login__button {
+      width: 100%;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      background-color: var(--white-color);
+      font-weight: var(--font-medium);
+      cursor: pointer;
+      color: var(--black-color);
+    }
+
+    .toggle-link {
+      text-align: center;
+      margin-top: 1rem;
+      color: var(--white-color);
+    }
+
+    .toggle-link a {
+      color: var(--white-color);
+      font-weight: var(--font-medium);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="C:\Users\hp\Downloads\WhatsApp Image 2024-12-27 at 10.34.19 AM.jpeg" alt="Background Image" class="background-image">
+
+    <div class="navigation">
+      <a href="#" id="home-link">Home</a>
+      <a href="#" id="imageupload">Image Upload</a>
+      <a href="#">About</a>
+      <a href="#">📞Contact</a>
+    </div>
+
+    <form id="login-form" class="login">
+      <h1 class="login__title">Login</h1>
+      <div class="login__box">
+        <label class="login__label" for="login-email">Email</label>
+        <input type="email" id="login-email" class="login__input" placeholder="Enter your email" required>
+      </div>
+      <div class="login__box">
+        <label class="login__label" for="login-password">Password</label>
+        <input type="password" id="login-password" class="login__input" placeholder="Enter your password" required>
+      </div>
+      <button type="submit" class="login__button">Login</button>
+      <p class="toggle-link">
+        Don't have an account? <a href="#" id="show-register">Register</a>
+      </p>
+    </form>
+
+    <form id="register-form" class="login" style="display: none;">
+      <h1 class="login__title">Register</h1>
+      <div class="login__box">
+        <label class="login__label" for="register-name">Name</label>
+        <input type="text" id="register-name" class="login__input" placeholder="Enter your name" required>
+      </div>
+      <div class="login__box">
+        <label class="login__label" for="register-email">Email</label>
+        <input type="email" id="register-email" class="login__input" placeholder="Enter your email" required>
+      </div>
+      <div class="login__box">
+        <label class="login__label" for="register-password">Password</label>
+        <input type="password" id="register-password" class="login__input" placeholder="Create a password" required>
+      </div>
+      <button type="submit" class="login__button">Register</button>
+      <p class="toggle-link">
+        Already have an account? <a href="#" id="show-login">Login</a>
+      </p>
+    </form>
+  </div>
+
+  <script>
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+    const showRegisterLink = document.getElementById('show-register');
+    const showLoginLink = document.getElementById('show-login');
+    const homeLink = document.getElementById('home-link');
+    const imageupload=document.getElementById('imageupload');
+
+    showRegisterLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      loginForm.style.display = 'none';
+      registerForm.style.display = 'block';
+    });
+
+    showLoginLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      registerForm.style.display = 'none';
+      loginForm.style.display = 'block';
+    });
+
+    homeLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = "home.html"; // Redirect to the home page
+    });
+
+
+
+    imageupload.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = "imageupload.html"; // Redirect to the home page
+    });
+
+
+
+  </script>
+</body>
+</html>
